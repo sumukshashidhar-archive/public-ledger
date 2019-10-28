@@ -144,6 +144,16 @@ app.post('/transaction', async function(req, res){
             res.redirect('/login')
         }
         else{
+            var newtoke = jwt.sign({Payee: req.body.payee, Payer:req.body.payer, Amount: req.body.Amount, mode:req.body.mode}, privateKEY, enc.signOptions)
+            console.log(newtoke)
+            jwt.verify(newtoke, publicKEY, enc.verifyOptions, function(err, decodedToken2){
+                if(!err){
+                    console.log(decodedToken2)
+                }
+                else{
+                    console.log(err)
+                }
+            })
             var newTransaction = new tc({
                 Payee: req.body.payee,
                 Payer: req.body.payer,
