@@ -7,8 +7,39 @@
     <input type="text" name="payee"><br>
     Amount: <br>
     <input type="text" name="Amount"><br>
-    <input type="checkbox" name="hidden">
+    Mode <br>
     <input type="submit" value="Submit">
   </form>
+
+<!-- Learn how to make a card here -->
+
+<table class="table table-inverse">
+      <thead>
+        <tr>
+          <th>Payee</th>
+          <th>Payer</th>
+          <th>Amount</th>
+          <th>Mode of Payment</th>
+          <th>Description</th>
+
+        </tr>
+      </thead>
+
+      <tbody>
+        <% for(var i=0; i < data.length; i++) { %>
+       <tr>
+
+         <td><%= data[i].Payee %></td>
+         <td><%= data[i].Payer %></td>
+         <td><%= data[i].Amount %></td>
+         <td><%=data[i].mode %></td>
+         <td><%=data[i].description %></td>
+
+
+       </tr>
+    <% } %>
+      </tbody>
+
+    </table>
 
 <%= data%>
