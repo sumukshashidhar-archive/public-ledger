@@ -14,9 +14,12 @@ const enc = require('./config/encryption.js')
 const UIDGenerator = require('uid-generator');
 const uidgen = new UIDGenerator(16, UIDGenerator.BASE62);
 var ct = require('./models/confirmedtransaction')
+var ctenc = require('./config/transactionenc.js')
 
 var privateKEY  = fs.readFileSync('./keys/private.key', 'utf8');
 var publicKEY  = fs.readFileSync('./keys/public.key', 'utf8');
+var ctprivateKEY  = fs.readFileSync('./keys/transactionprivate.key', 'utf8');
+var ctpublicKEY  = fs.readFileSync('./keys/transactionpublic.key', 'utf8');
 
 var token;
 var ran;
@@ -165,9 +168,9 @@ app.post('/mywallet', async function(req, res){
             tc.updateOne({uid: req.body.uid}, {$set: {verified: true}}, function(err, resultobj){
                 tc.findOne({uid: req.body.uid}, function(err, obj){
                     console.log(obj)
-                    var newtoke = jwt.sign({Payee: obj["Payee"], Payer:obj["Payer"], Amount: obj["Amount"], Mode:obj["Mode"]}, privateKEY, enc.signOptions)
+                    var newtoke = jwt.sign({Payee: obj["Payee"], Payer:obj["Payer"], Amount: obj["Amount"], Mode:obj["Mode"]}, ctprivateKEY, ctenc.signOptions)
                     console.log(newtoke)
-                    jwt.verify(newtoke, publicKEY, enc.verifyOptions, function(err, decodedToken2){
+                    jwt.verify(newtoke, ctpublicKEY, ctenc.verifyOptions, function(err, decodedToken2){
                         if(!err){
                         console.log(decodedToken2)
     
