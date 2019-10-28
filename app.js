@@ -45,7 +45,10 @@ app.get('/', async function(req, res){
 })
 
 app.get('/transaction', async function(req, res){
-    res.render('trans')
+    tc.find({}, function(err, obj){
+        res.render('trans', {data: obj})
+    })
+    
 })
   
 app.post('/transaction', async function(req, res){
@@ -61,6 +64,7 @@ app.post('/transaction', async function(req, res){
         }
         else{
             console.log(obj)
+            res.redirect('/transaction')
         }
     })
 })
