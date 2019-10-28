@@ -11,12 +11,15 @@ var serv = require('./config/serve')
 const cors =require('cors');
 var user = require('./models/user')
 const enc = require('./config/encryption.js')
+const UIDGenerator = require('uid-generator');
+const uidgen = new UIDGenerator(16, UIDGenerator.BASE62);
+var ct = require('./models/confirmedtransaction')
 
 var privateKEY  = fs.readFileSync('./keys/private.key', 'utf8');
 var publicKEY  = fs.readFileSync('./keys/public.key', 'utf8');
 
 var token;
-
+var ran;
 
 app.use(cors());
 mongoose.Promise = global.Promise; 
@@ -136,6 +139,60 @@ app.get('/transaction', async function(req, res){
 
     
 })
+
+app.get('/mywallet' ,async function(req, res){
+    jwt.verify(token, publicKEY, enc.verifyOptions, function(err, decodedToken){
+        if(err){
+            console.log(err)
+            res.redirect('/login')
+        }
+        else{
+            tc.find({Payer: decodedToken["sub"]}, function(err, obj){
+                console.log(obj)
+                res.render('wallet', {obj:obj})
+            })
+        }
+    })
+})
+
+app.post('/mywallet', async function(req, res){
+    jwt.verify(token, publicKEY, enc.verifyOptions, function(err, decodedToken){
+        if(err){
+            console.log(err)
+            res.redirect('/login')
+        }
+        else{
+            tc.updateOne({uid: req.body.uid}, {$set: {verified: true}}, function(err, resultobj){
+                tc.findOne({uid: req.body.uid}, function(err, obj){
+                    console.log(obj)
+                    var newtoke = jwt.sign({Payee: obj["Payee"], Payer:obj["Payer"], Amount: obj["Amount"], Mode:obj["Mode"]}, privateKEY, enc.signOptions)
+                    console.log(newtoke)
+                    jwt.verify(newtoke, publicKEY, enc.verifyOptions, function(err, decodedToken2){
+                        if(!err){
+                        console.log(decodedToken2)
+    
+                        var newCT = new ct({
+                            trdetails: newtoke
+                        })
+                        newCT.save(function(err, transactionobj){
+                            if(err){
+                                console.log(err)
+                            }
+                            else{
+                                console.log(transactionobj)
+                            }
+                        })
+                     }
+                        else{
+                            console.log(err)
+                        }
+                    })
+                })
+               
+            })
+        }
+    })
+})
   
 app.post('/transaction', async function(req, res){
     jwt.verify(token, publicKEY, enc.verifyOptions, function(err, decodedToken){
@@ -143,34 +200,36 @@ app.post('/transaction', async function(req, res){
             console.log(err)
             res.redirect('/login')
         }
-        else{
-            var newtoke = jwt.sign({Payee: req.body.payee, Payer:req.body.payer, Amount: req.body.Amount, mode:req.body.mode}, privateKEY, enc.signOptions)
-            console.log(newtoke)
-            jwt.verify(newtoke, publicKEY, enc.verifyOptions, function(err, decodedToken2){
-                if(!err){
-                    console.log(decodedToken2)
-                }
-                else{
-                    console.log(err)
-                }
-            })
-            var newTransaction = new tc({
-                Payee: req.body.payee,
-                Payer: req.body.payer,
-                Amount: req.body.Amount,
-                mode: req.body.mode, 
-                description: req.body.description
-            })
         
-            newTransaction.save(function(err, obj){
+        else{
+            uidgen.generate(async function(err, obj){
                 if(err){
                     console.log(err)
                 }
                 else{
                     console.log(obj)
-                    res.redirect('/transaction')
+                    var newTransaction = new tc({
+                        Payee: req.body.payee,
+                        Payer: req.body.payer,
+                        Amount: req.body.Amount,
+                        mode: req.body.mode, 
+                        description: req.body.description, 
+                        verified: false, 
+                        uid: obj
+                    })
+                
+                    newTransaction.save(function(err, obj){
+                        if(err){
+                            console.log(err)
+                        }
+                        else{
+                            console.log(obj)
+                            res.redirect('/transaction')
+                        }
+                    })
                 }
-            })
+            });
+          
         }
     })
 

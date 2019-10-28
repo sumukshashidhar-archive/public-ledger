@@ -6,7 +6,9 @@ var transactionSchema = new mongoose.Schema({
     Payer: String, 
     Amount: String,
     mode: String,
-    description: String
+    description: String, 
+    uid: String, 
+    verified: Boolean
 });
 
 module.exports = mongoose.model("Transaction", transactionSchema);
