@@ -1,0 +1,48 @@
+<%= obj%>
+
+<table class="table table-inverse">
+    <thead>
+      <tr>
+        <th>Payee</th>
+        <th>Payer</th>
+        <th>Amount</th>
+        <th>Mode of Payment</th>
+        <th>Description</th>
+        <th>UID</th>
+
+      </tr>
+    </thead>
+
+    <tbody>
+      <% for(var i=0; i < obj.length; i++) { %>
+     <tr>
+
+       <td><%= obj[i].Payee %></td>
+       <td><%= obj[i].Payer %></td>
+       <td><%= obj[i].Amount %></td>
+       <td><%=obj[i].mode %></td>
+       <td><%=obj[i].description %></td>
+       <td><%=obj[i].uid %></td>
+
+
+     </tr>
+  <% } %>
+    </tbody>
+
+  </table>
+
+
+<p>Enter below, an entry that you want to confirm. You can confirm one entry every 5 seconds</p>
+
+<form action="/mywallet" method="post">
+    Payee:<br>
+    <input type="text" name="payee"><br>
+    Amount: <br>
+    <input type="text" name="Amount"><br>
+    Mode <br>
+    <input type="text" name="mode"><br>
+    UID<br>
+    <input type="text" name="uid"><br>
+    <input type="submit" value="Submit"><br>
+
+  </form>
