@@ -92,17 +92,25 @@ app.get('/', async function(req, res){
 })
 
 app.get('/transaction', async function(req, res){
-    tc.find({}, function(err, obj){
+    tc.find({hidden: false}, function(err, obj){
         res.render('trans', {data: obj})
     })
     
 })
   
 app.post('/transaction', async function(req, res){
+    console.log(req.body.hidden)
+    if(req.body.hidden=="on"){
+        bool = true
+    }
+    else{
+        bool = false
+    }
     var newTransaction = new tc({
         Payee: req.body.payee,
         Payer: req.body.payer,
-        Amount: req.body.Amount
+        Amount: req.body.Amount,
+        hidden: bool
     })
 
     newTransaction.save(function(err, obj){
