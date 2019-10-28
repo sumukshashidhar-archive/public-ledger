@@ -8,6 +8,7 @@ var app = express();
 var db = require('./config/db')
 var serv = require('./config/serve')
 const cors =require('cors');
+var user = require('./models/user')
 
 app.use(cors());
 mongoose.Promise = global.Promise; 
@@ -37,11 +38,57 @@ mongoose.connect(db.mongoURI, {
 
 
 
+function authCheck(){
+    return false;
+}
 
+
+app.get('/login', async function(req, res){
+    res.render('login')
+})
+
+app.post('/login', async function(req, res){
+    user.findOne({username: req.body.username}, function(err, obj){
+        if(err){
+            console.log(err)
+        }
+        else{
+            console.log("Inside comparison")
+            if(bcrypt.compareSync(req.body.password, obj["password"])){
+                console.log(obj)
+                res.render('home', {user: obj})
+            }
+            else{
+                console.log("Password Error")
+            }
+        }
+    })
+})
+
+app.post('/register', async function(req, res){
+    var newUser = new user({
+        username: req.body.username,
+        password: bcrypt.hashSync(req.body.password, 9)
+    })
+
+    newUser.save(function(err, obj){
+        if(err){
+            console.log(err)
+        }
+        else{
+            res.redirect('login')
+            console.log(obj)
+        }
+    })
+})
+
+app.get('/register', async function(req, res){
+    res.render('register')
+})
 
 
 app.get('/', async function(req, res){
-    res.render('home')
+    res.render('home', {user: obj})
 })
 
 app.get('/transaction', async function(req, res){
