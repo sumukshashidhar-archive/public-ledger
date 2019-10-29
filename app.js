@@ -35,7 +35,7 @@ Each transaction has to be depicted in an orderly fashion
 
 */
 
-app.listen(serv.port, process.env.IP, function(req, res) //The Serv.port is from a config file
+app.listen(process.env.PORT || 5000, process.env.IP, function(req, res) //The Serv.port is from a config file
 {
     console.log("SERVER STARTED");
 });
