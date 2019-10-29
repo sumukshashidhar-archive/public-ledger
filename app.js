@@ -15,12 +15,12 @@ const UIDGenerator = require('uid-generator');
 const uidgen = new UIDGenerator(64, UIDGenerator.BASE62);
 var ct = require('./models/confirmedtransaction')
 var ctenc = require('./config/transactionenc.js')
-
+var msgenc = require('./controllers/encdecservice.js')
+var pubmsg = require('./models/pubmsg.js')
 var privateKEY  = fs.readFileSync('./keys/private.key', 'utf8');
 var publicKEY  = fs.readFileSync('./keys/public.key', 'utf8');
-var ctprivateKEY  = fs.readFileSync('./keys/transactionprivate.key', 'utf8');
-var ctpublicKEY  = fs.readFileSync('./keys/transactionpublic.key', 'utf8');
-
+var ctprivateKEY  = fs.readFileSync('./keys/transactionprivate.key', 'utf8'); //This is for encrypting transactions only
+var ctpublicKEY  = fs.readFileSync('./keys/transactionpublic.key', 'utf8'); //For decrypting transactions only
 var token;
 var ran;
 
@@ -55,6 +55,71 @@ mongoose.connect(db.mongoURI, {
 
 app.get('/login', async function(req, res){
     res.render('login')
+})
+
+
+
+app.post('/pubmsgencservice', async function(req, res){
+    uidgen.generate(async function(err, uidobj){
+        if(err){
+            console.log(err)
+        }
+        else{
+            var newMsg = new pubmsg({
+                EncryptedText: msgenc.encryptionService(req.body.password, req.body.message),
+                msgid: uidobj, 
+                sender: req.body.sender
+            })
+
+            newMsg.save(function(err, obj){
+                if(err){
+                    console.log(err)
+                }
+                else{
+                    console.log(obj)
+                    res.redirect('/msgboard')
+                }
+            })
+        }
+    })
+    
+})
+
+app.post('/pubmsgdecservice', async function(req, res){
+    pubmsg.findOne({msgid: req.body.msgid}, function(err, obj){
+        if(err){
+            console.log(err)
+        }
+        else{
+            var decrypted = msgenc.decryptionService(req.body.password, obj["EncryptedText"])
+            res.render('securedecpage', {data: decrypted})
+        }
+    })
+})
+
+
+app.post('/msgsearch', async function(req, res){
+    pubmsg.find({$or: [{sender: req.body.searchitem}, {msgid: req.body.searchitem}]}, function(err, obj){
+        if(err){
+            console.log(err)
+        }
+        else{
+            console.log(obj)
+            res.render('msgsearchresult', {data:obj})
+        }
+    })
+})
+
+app.get('/msgboard', async function(req, res){
+    pubmsg.find({}, function(err, obj){
+        if(err){
+            console.log(err)
+        }
+        else{
+            console.log(obj)
+            res.render('msgboard', {data: obj})
+        }
+    })
 })
 
 app.post('/login', async function(req, res){

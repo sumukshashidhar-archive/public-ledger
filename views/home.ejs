@@ -29,6 +29,8 @@
             <a class="item" href="/home" >Home</a>
             <a class="item" href="/transaction">My Transactions</a>
             <a class="item" href="/transaction" data-toggle="modal" data-target="#addTransactions">Add Transacton</a>
+            <a class="item" href="/pubmsgencservice" data-toggle="modal" data-target="#addpublicMessages">Add Encrypted Public Message</a>
+            <a class="item" href="/msgboard">Public Encrypted Message Board</a>
             <br>
             <a href="/logout" class="ui small inverted red button" style="margin-left: 4rem;">Logout</a>
 
@@ -75,6 +77,38 @@
                         <div class="field">
                             <label>Mode</label>
                             <input type="text" name="mode">
+                        </div>
+                        <input type="submit">
+                    </form>  
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="modal fade" id="addpublicMessages" tabindex="-1" role="dialog" aria-labelledby="addpublicMessagesLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="addpublicMessagesLabel">Add an Encrypted Message to the Message Board!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <form class="ui form" action="/pubmsgencservice" method="POST" >
+                        <div class="field">
+                            <label>Message</label>
+                            <textarea rows="2" name="message" placeholder="The text you want to encrypt goes here!"></textarea>
+                        </div>
+                        <div class="field">
+                            <label>Sender</label>
+                            <input type="text" name="sender" placeholder="Make it easy for someone to search for this! It doesnt have to be your real name!">
+                        </div>
+                        <div class="field">
+                            <label>Password to Encrypt this text</label>
+                            <input type="password" name="password" placeholder="Someone can read this message only with this password">
                         </div>
                         <input type="submit">
                     </form>  

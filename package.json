@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
+    "aes-js": "^3.1.2",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -12,6 +13,7 @@
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.7",
+    "nodemon": "^1.19.4",
     "uid-generator": "^2.0.0"
   },
   "devDependencies": {},
