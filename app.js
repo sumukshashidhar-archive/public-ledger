@@ -12,7 +12,7 @@ const cors =require('cors');
 var user = require('./models/user')
 const enc = require('./config/encryption.js')
 const UIDGenerator = require('uid-generator');
-const uidgen = new UIDGenerator(16, UIDGenerator.BASE62);
+const uidgen = new UIDGenerator(64, UIDGenerator.BASE62);
 var ct = require('./models/confirmedtransaction')
 var ctenc = require('./config/transactionenc.js')
 
